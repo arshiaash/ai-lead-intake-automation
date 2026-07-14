@@ -1,0 +1,59 @@
+{
+  "name": "Lead Intake — Error Handler",
+  "nodes": [
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BBVBS48QZ",
+          "mode": "id"
+        },
+        "text": "=⚠️ Workflow error in Lead Intake pipeline.\n\nWorkflow: {{ $json.workflow.name }}\nFailed node: {{ $json.execution.error.node.name }}\nError: {{ $json.execution.error.message }}\n\nManual follow-up may be needed — check n8n Executions log for the affected lead's details.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        208,
+        0
+      ],
+      "id": "958f580b-a1c9-46c5-800a-e6fdf2110911",
+      "name": "Send a message",
+      "webhookId": "3e04bc61-a869-4062-8a9b-9e1c0ccef578",
+      "credentials": {
+        "slackApi": {
+          "id": "3Kp0LfvFKoh8xKPV",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        0
+      ],
+      "id": "3068a781-995e-4935-8a85-45f2b295aa46",
+      "name": "Error Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {},
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f7c5e262-65dc-4c5a-b610-73b67d9f98e8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "abd03bfb08121f48e4a499f17f6730a1af27f100be838397e94be247af3c5fb2"
+  },
+  "nodeGroups": [],
+  "id": "CE2oNfeQLrFUukmo",
+  "tags": []
+}

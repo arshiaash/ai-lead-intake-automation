@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Control — Solis & Pier Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --void:#0A0E1A; --panel:#10172A; --panel-2:#161F38; --line:rgba(240,233,220,0.08);
+    --line-soft:rgba(240,233,220,0.05); --sand:#F0E9DC; --sand-dim:rgba(240,233,220,0.55);
+    --sand-faint:rgba(240,233,220,0.32);
+    --gold:#E0A94A; --gold-glow:rgba(224,169,74,0.35); --rose:#E07A6E; --rose-glow:rgba(224,122,110,0.3);
+    --sage:#7FB08A; --blue:#7B9FD4; --violet:#A48BD4;
+    --display:'Fraunces',serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{background:var(--void);}
+  body{
+    font-family:var(--body); background:var(--void); color:var(--sand); line-height:1.5;
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -5%, rgba(224,169,74,0.07), transparent),
+      radial-gradient(ellipse 700px 600px at 100% 10%, rgba(123,159,212,0.06), transparent);
+  }
+  a{color:inherit;}
+
+  .config-banner{
+    background:#3a2418; color:var(--rose); padding:11px 24px; font-family:var(--mono);
+    font-size:12px; display:none; align-items:center; gap:10px; justify-content:center;
+    border-bottom:1px solid rgba(224,122,110,0.3);
+  }
+  .config-banner.show{display:flex;}
+
+  /* ===== HEADER ===== */
+  header{
+    padding:30px 44px 26px; display:flex; align-items:flex-start; justify-content:space-between;
+    flex-wrap:wrap; gap:18px; border-bottom:1px solid var(--line);
+  }
+  .brand-mark{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:6px; display:flex; align-items:center; gap:8px;
+  }
+  .brand-mark .sep{opacity:.4;}
+  h1.title{
+    font-family:var(--display); font-weight:440; font-size:30px; letter-spacing:-.01em;
+    color:var(--sand);
+  }
+  h1.title em{font-style:italic; color:var(--gold); font-weight:400;}
+  .header-right{display:flex; align-items:center; gap:16px;}
+  .pulse{display:flex; align-items:center; gap:9px; font-family:var(--mono); font-size:11.5px; color:var(--sand-faint);}
+  .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--sage); box-shadow:0 0 8px var(--sage); animation:pulse 2.2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .refresh-btn{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--sand);
+    font-family:var(--body); font-size:12.5px; font-weight:600; padding:9px 17px; border-radius:8px;
+    cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:7px;
+  }
+  .refresh-btn:hover{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold-glow);}
+  .refresh-btn svg{width:13px;height:13px;}
+  .refresh-btn.spinning svg{animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  main{max-width:1380px; margin:0 auto; padding:34px 44px 90px;}
+
+  /* ===== AI BRIEFING ===== */
+  .briefing{
+    background:linear-gradient(135deg, var(--panel-2), var(--panel));
+    border:1px solid var(--line); border-radius:16px; padding:26px 30px; margin-bottom:26px;
+    position:relative; overflow:hidden;
+  }
+  .briefing::before{
+    content:""; position:absolute; top:-50%; right:-10%; width:340px; height:340px; border-radius:50%;
+    background:radial-gradient(circle, var(--gold-glow), transparent 70%); pointer-events:none;
+  }
+  .briefing-head{display:flex; align-items:center; gap:10px; margin-bottom:14px; position:relative;}
+  .briefing-icon{
+    width:26px;height:26px;border-radius:50%; background:rgba(224,169,74,0.15);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .briefing-icon svg{width:14px;height:14px;color:var(--gold);}
+  .briefing-label{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--gold);}
+  .briefing-text{
+    font-family:var(--display); font-size:18px; font-weight:400; line-height:1.5; color:var(--sand);
+    max-width:900px; position:relative;
+  }
+  .briefing-text .placeholder{color:var(--sand-faint); font-style:italic;}
+  .briefing-meta{margin-top:12px; font-family:var(--mono); font-size:10.5px; color:var(--sand-faint); position:relative;}
+  .briefing-btn{
+    background:none; border:1px solid var(--line); color:var(--gold); font-family:var(--mono);
+    font-size:11px; padding:6px 12px; border-radius:6px; cursor:pointer; margin-top:14px;
+    position:relative; transition:border-color .2s;
+  }
+  .briefing-btn:hover{border-color:var(--gold);}
+
+  /* ===== Q&A CHAT (inside briefing card) ===== */
+  .qa-divider{height:1px; background:var(--line); margin:20px 0 16px; position:relative;}
+  .qa-toggle{
+    background:none; border:1px solid var(--line); color:var(--sand-dim); font-family:var(--body);
+    font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer;
+    position:relative; display:flex; align-items:center; gap:7px; transition:all .2s;
+  }
+  .qa-toggle:hover{border-color:var(--gold); color:var(--gold);}
+  .qa-toggle svg{width:13px;height:13px;}
+  .qa-panel{display:none; margin-top:18px; position:relative;}
+  .qa-panel.open{display:block;}
+  .qa-log{
+    max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;
+    margin-bottom:14px; padding-right:4px;
+  }
+  .qa-msg{display:flex; gap:10px; font-size:13.5px; line-height:1.5;}
+  .qa-msg.user{flex-direction:row-reverse;}
+  .qa-bubble{
+    padding:10px 14px; border-radius:12px; max-width:88%; line-height:1.6;
+  }
+  .qa-msg.assistant .qa-bubble{background:var(--panel-2); color:var(--sand-dim); border:1px solid var(--line);}
+  .qa-msg.user .qa-bubble{background:rgba(224,169,74,0.14); color:var(--sand); border:1px solid var(--gold-glow);}
+  .qa-msg.assistant .qa-bubble.thinking{color:var(--sand-faint); font-style:italic;}
+  .qa-input-row{display:flex; gap:10px;}
+  .qa-input{
+    flex:1; border:1px solid var(--line); border-radius:10px; padding:11px 15px;
+    font-family:var(--body); font-size:13.5px; background:var(--panel-2); color:var(--sand); outline:none;
+    transition:border-color .2s;
+  }
+  .qa-input::placeholder{color:var(--sand-faint);}
+  .qa-input:focus{border-color:var(--gold);}
+  .qa-send{
+    background:var(--gold); color:var(--void); border:none; border-radius:10px; padding:11px 18px;
+    font-weight:700; font-size:13px; cursor:pointer; transition:opacity .2s; flex-shrink:0;
+  }
+  .qa-send:disabled{opacity:.4; cursor:not-allowed;}
+  .qa-suggestions{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px;}
+  .qa-chip{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--sand-faint); font-family:var(--mono);
+    font-size:11px; padding:6px 11px; border-radius:20px; cursor:pointer; transition:all .15s;
+  }
+  .qa-chip:hover{border-color:var(--gold); color:var(--gold);}
+
+  /* ===== PULSE STRIP ===== */
+  .pulse-strip{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 1fr; gap:14px; margin-bottom:26px;}
+  .pulse-cell{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 22px;
+    position:relative; overflow:hidden;
+  }
+  .pulse-cell.hero{background:linear-gradient(160deg, var(--panel-2), var(--panel));}
+  .pulse-cell .label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--sand-faint);margin-bottom:10px;}
+  .pulse-cell .value{font-family:var(--display);font-size:36px;font-weight:480;color:var(--sand);line-height:1;}
+  .pulse-cell.hero .value{font-size:52px; color:var(--gold);}
+  .pulse-cell .value.rose{color:var(--rose); text-shadow:0 0 18px var(--rose-glow);}
+  .pulse-cell .sub{font-size:11.5px;color:var(--sand-faint);margin-top:6px;}
+
+  /* ===== GRID ===== */
+  .bento{display:grid; grid-template-columns: 1.5fr 1fr; gap:16px; margin-bottom:16px;}
+  .bento-row2{display:grid; grid-template-columns: 1.3fr 1fr 1fr; gap:16px; margin-bottom:16px;}
+  .bento-row3{display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;}
+
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:26px 28px;
+  }
+  .card h2{font-family:var(--display); font-weight:480; font-size:17px; margin-bottom:3px; color:var(--sand);}
+  .card .card-sub{font-size:12px; color:var(--sand-faint); margin-bottom:20px;}
+  .chart-wrap{position:relative; height:230px;}
+  .chart-wrap.tall{height:270px;}
+
+  /* ===== FUNNEL — custom SVG flow, not generic bars ===== */
+  .funnel-flow{display:flex; align-items:center; gap:0; margin-top:8px; overflow-x:auto;}
+  .funnel-node{
+    display:flex; flex-direction:column; align-items:center; min-width:92px; position:relative; flex-shrink:0;
+  }
+  .funnel-circle{
+    width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:21px; font-weight:600; color:var(--void); margin-bottom:10px;
+    box-shadow:0 0 24px var(--glow-color, transparent);
+  }
+  .funnel-name{font-size:11px; color:var(--sand-dim); font-weight:600; text-align:center;}
+  .funnel-connector{
+    flex:1; min-width:24px; height:2px; background:linear-gradient(90deg, var(--line), var(--line));
+    margin-bottom:36px; position:relative;
+  }
+  .funnel-connector::after{
+    content:"›"; position:absolute; right:-2px; top:50%; transform:translateY(-50%); color:var(--sand-faint); font-size:14px;
+  }
+
+  /* legend */
+  .legend-list{display:flex;flex-direction:column;gap:13px;margin-top:6px;}
+  .legend-row{display:flex; align-items:center; gap:11px; font-size:13px;}
+  .legend-bar-track{flex:1; height:6px; background:var(--line-soft); border-radius:4px; overflow:hidden;}
+  .legend-bar-fill{height:100%; border-radius:4px; transition:width .6s ease;}
+  .legend-name{min-width:90px; color:var(--sand-dim); font-size:12.5px;}
+  .legend-count{font-family:var(--mono); font-weight:600; color:var(--sand); font-size:12px; min-width:22px; text-align:right;}
+
+  /* timeline / sparkline annotations */
+  .timeline-peak{
+    font-family:var(--mono); font-size:10.5px; color:var(--gold); margin-top:10px;
+    display:flex; align-items:center; gap:6px;
+  }
+
+  /* table */
+  .table-card{margin-top:6px;}
+  .table-controls{display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap;}
+  .search-input{
+    flex:1; min-width:220px; border:1px solid var(--line); border-radius:9px; padding:10px 15px;
+    font-family:var(--body); font-size:13.5px; outline:none; transition:border-color .2s;
+    background:var(--panel-2); color:var(--sand);
+  }
+  .search-input::placeholder{color:var(--sand-faint);}
+  .search-input:focus{border-color:var(--gold);}
+  select.filter-select{
+    border:1px solid var(--line); border-radius:9px; padding:10px 13px; font-family:var(--body);
+    font-size:12.5px; background:var(--panel-2); color:var(--sand); outline:none;
+  }
+  .table-scroll{overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{
+    text-align:left; font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--sand-faint); padding:9px 13px; border-bottom:1px solid var(--line); white-space:nowrap;
+  }
+  tbody td{padding:12px 13px; border-bottom:1px solid var(--line-soft); white-space:nowrap; max-width:220px; overflow:hidden; text-overflow:ellipsis; color:var(--sand-dim);}
+  tbody tr{transition:background .15s;}
+  tbody tr:hover{background:var(--panel-2);}
+  .badge{display:inline-block; padding:4px 10px; border-radius:20px; font-size:10.5px; font-weight:700; letter-spacing:.01em;}
+  .badge-new{background:rgba(123,159,212,0.15);color:var(--blue);}
+  .badge-contacted{background:rgba(224,169,74,0.15);color:var(--gold);}
+  .badge-progress{background:rgba(164,139,212,0.15);color:var(--violet);}
+  .badge-converted{background:rgba(127,176,138,0.15);color:var(--sage);}
+  .badge-lost{background:rgba(224,122,110,0.15);color:var(--rose);}
+  .badge-followup{background:rgba(224,122,110,0.18);color:var(--rose);}
+  .urgency-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;}
+  .u-high{background:var(--rose); box-shadow:0 0 6px var(--rose-glow);} .u-medium{background:var(--gold);} .u-low{background:var(--sage);}
+
+  .state-box{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    padding:80px 20px; color:var(--sand-faint); text-align:center;
+  }
+  .spinner{
+    width:32px;height:32px;border:3px solid var(--line); border-top-color:var(--gold);
+    border-radius:50%; animation:spin .8s linear infinite;
+  }
+  .state-box .err-msg{font-family:var(--mono); font-size:12px; max-width:480px; color:var(--rose);}
+  .state-box button{
+    background:var(--gold); color:var(--void); border:none; padding:10px 20px; border-radius:8px;
+    font-weight:700; font-size:13px; cursor:pointer;
+  }
+
+  footer{text-align:center; padding:34px; font-size:11px; color:var(--sand-faint); font-family:var(--mono);}
+
+  @media (max-width: 1080px){
+    .bento{grid-template-columns:1fr;}
+    .bento-row2{grid-template-columns:1fr;}
+    .bento-row3{grid-template-columns:1fr;}
+    .pulse-strip{grid-template-columns:repeat(2,1fr);}
+    main{padding:26px 20px 70px;}
+    header{padding:24px 22px 22px;}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;}}
+  :focus-visible{outline:2px solid var(--gold); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="config-banner" id="configBanner">⚠ Add your Airtable + OpenAI credentials in the CONFIG block at the top of the script to load live data.</div>
+
+<header>
+  <div>
+    <div class="brand-mark">SOLIS &amp; PIER ADVISORY <span class="sep">/</span> OPERATIONS</div>
+    <h1 class="title">Pipeline <em>Control</em></h1>
+  </div>
+  <div class="header-right">
+    <div class="pulse"><span class="pulse-dot"></span><span id="syncLabel">synced just now</span></div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadData(true)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- AI BRIEFING -->
+  <div class="briefing">
+    <div class="briefing-head">
+      <div class="briefing-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9z"/></svg></div>
+      <div class="briefing-label">AI Daily Briefing</div>
+    </div>
+    <div class="briefing-text" id="briefingText"><span class="placeholder">Generating today's summary…</span></div>
+    <div class="briefing-meta" id="briefingMeta"></div>
+    <button class="briefing-btn" id="briefingBtn" onclick="generateBriefing()">↻ Regenerate briefing</button>
+
+    <div class="qa-divider"></div>
+    <button class="qa-toggle" id="qaToggle" onclick="toggleQA()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      Ask a question about this data
+    </button>
+    <div class="qa-panel" id="qaPanel">
+      <div class="qa-suggestions" id="qaSuggestions">
+        <span class="qa-chip" onclick="askSuggestion(this)">Which leads are high urgency and after-hours?</span>
+        <span class="qa-chip" onclick="askSuggestion(this)">How many leads does Sarah Chen have?</span>
+        <span class="qa-chip" onclick="askSuggestion(this)">List every repeat contact</span>
+        <span class="qa-chip" onclick="askSuggestion(this)">Which inquiry type converts best?</span>
+      </div>
+      <div class="qa-log" id="qaLog"></div>
+      <div class="qa-input-row">
+        <input type="text" class="qa-input" id="qaInput" placeholder="Ask anything about your leads…" onkeydown="if(event.key==='Enter') sendQA();">
+        <button class="qa-send" id="qaSend" onclick="sendQA()">Ask</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PULSE STRIP -->
+  <div class="pulse-strip" id="pulseStrip">
+    <div class="pulse-cell hero"><div class="label">Needs Attention Now</div><div class="value" id="statOpen">—</div><div class="sub" id="statOpenSub">leads still untouched</div></div>
+    <div class="pulse-cell"><div class="label">Total Leads</div><div class="value" id="statTotal">—</div><div class="sub">all time</div></div>
+    <div class="pulse-cell"><div class="label">Today</div><div class="value" id="statToday">—</div><div class="sub">new submissions</div></div>
+    <div class="pulse-cell"><div class="label">High Urgency</div><div class="value rose" id="statUrgent">—</div><div class="sub">flagged by AI</div></div>
+    <div class="pulse-cell"><div class="label">Repeat Contacts</div><div class="value" id="statRepeat">—</div><div class="sub">followed up again</div></div>
+  </div>
+
+  <div class="state-box" id="stateBox" style="display:none;"></div>
+
+  <div id="dashboardContent" style="display:none;">
+
+    <div class="bento">
+      <div class="card">
+        <h2>Lead volume, last 14 days</h2>
+        <div class="card-sub">Daily submission trend</div>
+        <div class="chart-wrap tall"><canvas id="volumeChart"></canvas></div>
+        <div class="timeline-peak" id="volumePeak"></div>
+      </div>
+      <div class="card">
+        <h2>Busiest contact hours</h2>
+        <div class="card-sub">By hour of day, IST — red = outside business hours</div>
+        <div class="chart-wrap tall"><canvas id="hourChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h2>Pipeline funnel</h2>
+      <div class="card-sub">Where every lead currently sits</div>
+      <div class="funnel-flow" id="funnelWrap"></div>
+    </div>
+
+    <div class="bento-row2">
+      <div class="card">
+        <h2>By inquiry type</h2>
+        <div class="card-sub">What people are actually asking about</div>
+        <div class="chart-wrap"><canvas id="inquiryChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>By urgency level</h2>
+        <div class="card-sub">AI-assessed, independent of category</div>
+        <div class="chart-wrap"><canvas id="urgencyChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Workload by rep</h2>
+        <div class="card-sub">Assignment distribution</div>
+        <div id="assigneeLegend" class="legend-list"></div>
+      </div>
+    </div>
+
+    <div class="bento-row3">
+      <div class="card">
+        <h2>After-hours split</h2>
+        <div class="card-sub">Business hours vs. outside hours (IST)</div>
+        <div class="chart-wrap"><canvas id="hoursChart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>First-time vs. repeat</h2>
+        <div class="card-sub">How many leads had to follow up again</div>
+        <div class="chart-wrap"><canvas id="repeatChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card table-card">
+      <h2>All leads</h2>
+      <div class="card-sub">Search and filter the full pipeline</div>
+      <div class="table-controls">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by name, company, or email…" oninput="renderTable()">
+        <select class="filter-select" id="statusFilter" onchange="renderTable()"><option value="">All statuses</option></select>
+        <select class="filter-select" id="urgencyFilter" onchange="renderTable()"><option value="">All urgency</option></select>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Name</th><th>Company</th><th>Inquiry</th><th>Urgency</th><th>Assigned</th><th>Status</th><th>Submitted</th></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>Pipeline Control · live from Airtable, briefing by GPT-5.4-mini · Solis &amp; Pier Advisory (portfolio project)</footer>
+
+<script>
+// ====================================================================
+// CONFIG — paste your own values here on your own machine.
+// Do not commit a filled-in copy of this file publicly (e.g. GitHub).
+// ====================================================================
+const CONFIG = {
+  BASE_ID: "appjquZ9tjUP6siUU",
+  TABLE_NAME: "Leads",
+  AIRTABLE_TOKEN: "YOUR_AIRTABLE_PERSONAL_ACCESS_TOKEN_HERE",
+  OPENAI_API_KEY: "YOUR_OPENAI_API_KEY_HERE"
+};
+
+// ====================================================================
+
+let allRecords = [];
+
+function airtableConfigured(){
+  return CONFIG.BASE_ID && !CONFIG.BASE_ID.includes("YOUR_") && CONFIG.AIRTABLE_TOKEN && !CONFIG.AIRTABLE_TOKEN.includes("YOUR_");
+}
+function openaiConfigured(){
+  return CONFIG.OPENAI_API_KEY && !CONFIG.OPENAI_API_KEY.includes("YOUR_");
+}
+
+async function fetchAllRecords(){
+  let records = [], offset = null;
+  do {
+    const url = `https://api.airtable.com/v0/${CONFIG.BASE_ID}/${encodeURIComponent(CONFIG.TABLE_NAME)}${offset ? '?offset=' + offset : ''}`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${CONFIG.AIRTABLE_TOKEN}` } });
+    if(!res.ok) throw new Error(`Airtable API error ${res.status}: ${(await res.text()).slice(0,200)}`);
+    const data = await res.json();
+    records = records.concat(data.records);
+    offset = data.offset;
+  } while(offset);
+  return records;
+}
+
+function showState(type, message){
+  const box = document.getElementById('stateBox');
+  document.getElementById('dashboardContent').style.display = 'none';
+  box.style.display = 'flex';
+  if(type === 'loading') box.innerHTML = `<div class="spinner"></div><div>Pulling live data from Airtable…</div>`;
+  else if(type === 'error') box.innerHTML = `<div style="font-size:32px;">⚠</div><div>Couldn't load lead data.</div><div class="err-msg">${message}</div><button onclick="loadData()">Try again</button>`;
+  else if(type === 'unconfigured') box.innerHTML = `<div style="font-size:32px;">⚙</div><div>This dashboard needs your Airtable credentials.</div><div class="err-msg">Open this file in a text editor, find the CONFIG block near the top of the script, and paste in your Base ID and Personal Access Token.</div>`;
+}
+function hideState(){ document.getElementById('stateBox').style.display = 'none'; document.getElementById('dashboardContent').style.display = 'block'; }
+
+async function loadData(isManual){
+  const btn = document.getElementById('refreshBtn');
+  if(isManual) btn.classList.add('spinning');
+  if(!airtableConfigured()){
+    document.getElementById('configBanner').classList.add('show');
+    showState('unconfigured');
+    if(isManual) btn.classList.remove('spinning');
+    return;
+  }
+  if(!isManual) showState('loading');
+  try{
+    allRecords = await fetchAllRecords();
+    renderAll();
+    hideState();
+    lastSync = Date.now();
+    document.getElementById('syncLabel').textContent = 'synced just now';
+    if(!briefingGenerated) generateBriefing();
+  } catch(err){ showState('error', err.message); }
+  if(isManual) setTimeout(()=>btn.classList.remove('spinning'), 500);
+}
+
+function fieldOf(rec, name, fallback){
+  // Some Airtable fields in this base have an invisible trailing space in their
+  // real API key (e.g. "UrgencyLevel " not "UrgencyLevel") — this checks both
+  // the exact name and a trailing-space variant so it works either way.
+  let v = rec.fields[name];
+  if(v === undefined) v = rec.fields[name + ' '];
+  return (v===undefined||v===null||v==='') ? fallback : v;
+}
+function istHourOf(iso){ if(!iso) return null; const d = new Date(iso); if(isNaN(d)) return null; return Math.floor((d.getUTCHours()+5.5)%24); }
+
+const COLORS = {
+  Pricing:'#7B9FD4', Partnership:'#E0A94A', 'Technical Support':'#A48BD4', 'High-Value Prospect':'#E07A6E', 'General Inquiry':'#7FB08A',
+  Low:'#7FB08A', Medium:'#E0A94A', High:'#E07A6E',
+  New:'#7B9FD4', Contacted:'#E0A94A', 'In Progress':'#A48BD4', Converted:'#7FB08A', Lost:'#E07A6E', 'Follow-up Received':'#E07A6E'
+};
+
+let charts = {};
+function destroyChart(k){ if(charts[k]){ charts[k].destroy(); delete charts[k]; } }
+Chart.defaults.color = 'rgba(240,233,220,0.55)';
+Chart.defaults.font.family = "'Inter', sans-serif";
+
+function renderAll(){
+  renderPulseStrip(); renderVolumeChart(); renderHourChart(); renderInquiryChart();
+  renderUrgencyChart(); renderAssigneeLegend(); renderFunnel(); renderHoursChart();
+  renderRepeatChart(); populateFilters(); renderTable();
+}
+
+function renderPulseStrip(){
+  const total = allRecords.length;
+  const todayStr = new Date().toISOString().slice(0,10);
+  const today = allRecords.filter(r => (fieldOf(r,'Submitted At','')||'').slice(0,10) === todayStr).length;
+  const open = allRecords.filter(r => fieldOf(r,'Status','') === 'New').length;
+  const urgent = allRecords.filter(r => fieldOf(r,'UrgencyLevel','') === 'High').length;
+  const repeat = allRecords.filter(r => fieldOf(r,'IsRepeatContact','No') === 'Yes').length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statToday').textContent = today;
+  document.getElementById('statOpen').textContent = open;
+  document.getElementById('statUrgent').textContent = urgent;
+  document.getElementById('statRepeat').textContent = repeat;
+}
+
+function renderVolumeChart(){
+  destroyChart('volume');
+  const days = [];
+  for(let i=13;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); days.push(d.toISOString().slice(0,10)); }
+  const counts = days.map(day => allRecords.filter(r => (fieldOf(r,'Submitted At','')||'').slice(0,10) === day).length);
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  const peakEl = document.getElementById('volumePeak');
+  if(Math.max(...counts) > 0) peakEl.innerHTML = `▲ Busiest day: ${days[maxIdx].slice(5)} — ${counts[maxIdx]} lead${counts[maxIdx]>1?'s':''}`;
+  else peakEl.innerHTML = '';
+
+  charts.volume = new Chart(document.getElementById('volumeChart'), {
+    type:'line',
+    data:{ labels: days.map(d=>d.slice(5)), datasets:[{
+      data: counts, borderColor:'#E0A94A', backgroundColor:'rgba(224,169,74,0.12)',
+      fill:true, tension:0.4, pointRadius:3, pointBackgroundColor:'#E0A94A', borderWidth:2.5, pointBorderColor:'#0A0E1A', pointBorderWidth:2
+    }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ y:{beginAtZero:true, ticks:{precision:0, font:{family:'JetBrains Mono', size:10}}, grid:{color:'rgba(240,233,220,0.06)'}},
+               x:{ ticks:{font:{family:'JetBrains Mono', size:9}}, grid:{display:false} } } }
+  });
+}
+
+function renderHourChart(){
+  destroyChart('hour');
+  const buckets = new Array(24).fill(0);
+  allRecords.forEach(r => { const h = istHourOf(fieldOf(r,'Submitted At',null)); if(h!==null) buckets[h]++; });
+  charts.hour = new Chart(document.getElementById('hourChart'), {
+    type:'bar',
+    data:{ labels: buckets.map((_,i)=>i.toString().padStart(2,'0')), datasets:[{
+      data: buckets, backgroundColor: buckets.map((_,i)=> (i<9||i>=18) ? '#E07A6E' : '#7B9FD4'), borderRadius:5
+    }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ y:{beginAtZero:true, ticks:{precision:0, font:{family:'JetBrains Mono', size:9}}, grid:{color:'rgba(240,233,220,0.06)'}},
+               x:{ ticks:{font:{family:'JetBrains Mono', size:8}, maxRotation:0}, grid:{display:false} } } }
+  });
+}
+
+function countBy(field, options){
+  const counts = {}; options.forEach(o=>counts[o]=0);
+  allRecords.forEach(r => { const v=fieldOf(r,field,null); if(v) counts[v]=(counts[v]||0)+1; });
+  return counts;
+}
+
+function renderInquiryChart(){
+  destroyChart('inquiry');
+  const counts = countBy('InquiryType', ['Pricing','Partnership','Technical Support','High-Value Prospect','General Inquiry']);
+  const labels = Object.keys(counts).filter(k=>counts[k]>0);
+  charts.inquiry = new Chart(document.getElementById('inquiryChart'), {
+    type:'doughnut',
+    data:{ labels, datasets:[{ data: labels.map(l=>counts[l]), backgroundColor: labels.map(l=>COLORS[l]||'#999'), borderWidth:3, borderColor:'#10172A' }]},
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'66%',
+      plugins:{legend:{position:'bottom', labels:{font:{family:'Inter', size:11}, padding:10, boxWidth:9, color:'rgba(240,233,220,0.7)'}}} }
+  });
+}
+
+function renderUrgencyChart(){
+  destroyChart('urgency');
+  const counts = countBy('UrgencyLevel', ['Low','Medium','High']);
+  charts.urgency = new Chart(document.getElementById('urgencyChart'), {
+    type:'bar',
+    data:{ labels:['Low','Medium','High'], datasets:[{ data:[counts.Low,counts.Medium,counts.High],
+      backgroundColor:[COLORS.Low,COLORS.Medium,COLORS.High], borderRadius:7, barThickness:42 }]},
+    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y', plugins:{legend:{display:false}},
+      scales:{ x:{beginAtZero:true, ticks:{precision:0, font:{family:'JetBrains Mono', size:10}}, grid:{color:'rgba(240,233,220,0.06)'}},
+               y:{ ticks:{font:{family:'Inter', size:12, weight:600}, color:'rgba(240,233,220,0.8)'}, grid:{display:false} } } }
+  });
+}
+
+function renderAssigneeLegend(){
+  const counts = {};
+  allRecords.forEach(r => { const a=fieldOf(r,'AssignedTo',null); if(a) counts[a]=(counts[a]||0)+1; });
+  const palette = ['#7B9FD4','#E0A94A','#A48BD4','#7FB08A','#E07A6E'];
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const wrap = document.getElementById('assigneeLegend');
+  if(entries.length === 0){ wrap.innerHTML = '<div style="color:var(--sand-faint);font-size:13px;">No assignments yet</div>'; return; }
+  const max = Math.max(...entries.map(e=>e[1]));
+  wrap.innerHTML = entries.map(([name,count],i) => `
+    <div class="legend-row">
+      <span class="legend-name">${name}</span>
+      <span class="legend-bar-track"><span class="legend-bar-fill" style="width:${(count/max*100)}%; background:${palette[i%palette.length]}"></span></span>
+      <span class="legend-count">${count}</span>
+    </div>`).join('');
+}
+
+function renderFunnel(){
+  const stages = ['New','Contacted','In Progress','Converted'];
+  const counts = stages.map(s => allRecords.filter(r => fieldOf(r,'Status','') === s).length);
+  const max = Math.max(...counts, 1);
+  const wrap = document.getElementById('funnelWrap');
+  wrap.innerHTML = stages.map((s,i) => `
+    <div class="funnel-node">
+      <div class="funnel-circle" style="background:${COLORS[s]}; --glow-color:${COLORS[s]}66; opacity:${0.5+0.5*(counts[i]/max)}">${counts[i]}</div>
+      <div class="funnel-name">${s}</div>
+    </div>
+    ${i < stages.length-1 ? '<div class="funnel-connector"></div>' : ''}
+  `).join('');
+}
+
+function renderHoursChart(){
+  destroyChart('hours');
+  let biz=0, after=0;
+  allRecords.forEach(r => { const h=istHourOf(fieldOf(r,'Submitted At',null)); if(h===null) return; if(h<9||h>=18) after++; else biz++; });
+  charts.hours = new Chart(document.getElementById('hoursChart'), {
+    type:'doughnut',
+    data:{ labels:['Business hours','After hours'], datasets:[{ data:[biz,after], backgroundColor:['#7B9FD4','#E07A6E'], borderWidth:3, borderColor:'#10172A' }]},
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'66%',
+      plugins:{legend:{position:'bottom', labels:{font:{family:'Inter', size:11}, padding:10, boxWidth:9, color:'rgba(240,233,220,0.7)'}}} }
+  });
+}
+
+function renderRepeatChart(){
+  destroyChart('repeat');
+  const repeat = allRecords.filter(r => fieldOf(r,'IsRepeatContact','No') === 'Yes').length;
+  const first = allRecords.length - repeat;
+  charts.repeat = new Chart(document.getElementById('repeatChart'), {
+    type:'doughnut',
+    data:{ labels:['First-time','Repeat'], datasets:[{ data:[first,repeat], backgroundColor:['#7FB08A','#E07A6E'], borderWidth:3, borderColor:'#10172A' }]},
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'66%',
+      plugins:{legend:{position:'bottom', labels:{font:{family:'Inter', size:11}, padding:10, boxWidth:9, color:'rgba(240,233,220,0.7)'}}} }
+  });
+}
+
+function badgeClass(s){ return {'New':'badge-new','Contacted':'badge-contacted','In Progress':'badge-progress','Converted':'badge-converted','Lost':'badge-lost','Follow-up Received':'badge-followup'}[s] || 'badge-new'; }
+function urgencyDotClass(u){ return u==='High'?'u-high':u==='Medium'?'u-medium':'u-low'; }
+
+function populateFilters(){
+  const statuses = [...new Set(allRecords.map(r=>fieldOf(r,'Status',null)).filter(Boolean))];
+  const urgencies = [...new Set(allRecords.map(r=>fieldOf(r,'UrgencyLevel',null)).filter(Boolean))];
+  document.getElementById('statusFilter').innerHTML = '<option value="">All statuses</option>' + statuses.map(s=>`<option value="${s}">${s}</option>`).join('');
+  document.getElementById('urgencyFilter').innerHTML = '<option value="">All urgency</option>' + urgencies.map(u=>`<option value="${u}">${u}</option>`).join('');
+}
+
+function renderTable(){
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  const statusF = document.getElementById('statusFilter').value;
+  const urgencyF = document.getElementById('urgencyFilter').value;
+  let rows = allRecords.filter(r => {
+    const name=(fieldOf(r,'Name','')||'').toLowerCase(), company=(fieldOf(r,'Company','')||'').toLowerCase(), email=(fieldOf(r,'Email','')||'').toLowerCase();
+    const mQ = !q || name.includes(q) || company.includes(q) || email.includes(q);
+    const mS = !statusF || fieldOf(r,'Status','') === statusF;
+    const mU = !urgencyF || fieldOf(r,'UrgencyLevel','') === urgencyF;
+    return mQ && mS && mU;
+  });
+  rows.sort((a,b)=> new Date(fieldOf(b,'Submitted At',0)) - new Date(fieldOf(a,'Submitted At',0)));
+  const tbody = document.getElementById('tableBody');
+  if(rows.length===0){ tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--sand-faint); padding:34px;">No leads match this search.</td></tr>`; return; }
+  tbody.innerHTML = rows.map(r => {
+    const submitted = fieldOf(r,'Submitted At', null);
+    const dateStr = submitted ? new Date(submitted).toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'}) : '—';
+    const urgency = fieldOf(r,'UrgencyLevel','—');
+    return `<tr>
+      <td style="color:var(--sand);font-weight:600;">${fieldOf(r,'Name','—')}</td>
+      <td>${fieldOf(r,'Company','—')}</td>
+      <td>${fieldOf(r,'InquiryType','—')}</td>
+      <td>${urgency!=='—' ? `<span class="urgency-dot ${urgencyDotClass(urgency)}"></span>${urgency}` : '—'}</td>
+      <td>${fieldOf(r,'AssignedTo','—')}</td>
+      <td><span class="badge ${badgeClass(fieldOf(r,'Status',''))}">${fieldOf(r,'Status','—')}</span></td>
+      <td style="font-family:var(--mono); font-size:11px;">${dateStr}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== AI DAILY BRIEFING =====
+let briefingGenerated = false;
+async function generateBriefing(){
+  const textEl = document.getElementById('briefingText');
+  const metaEl = document.getElementById('briefingMeta');
+  if(!openaiConfigured()){
+    textEl.innerHTML = `<span class="placeholder">Add an OPENAI_API_KEY in the CONFIG block to enable AI-generated daily summaries. Until then: you have ${allRecords.length} total leads, ${allRecords.filter(r=>fieldOf(r,'Status','')==='New').length} awaiting first contact.</span>`;
+    return;
+  }
+  briefingGenerated = true;
+  textEl.innerHTML = `<span class="placeholder">Thinking…</span>`;
+  const today = new Date().toISOString().slice(0,10);
+  const snapshot = {
+    total: allRecords.length,
+    today: allRecords.filter(r => (fieldOf(r,'Submitted At','')||'').slice(0,10) === today).length,
+    open: allRecords.filter(r => fieldOf(r,'Status','')==='New').length,
+    urgentLeads: allRecords.filter(r => fieldOf(r,'UrgencyLevel','')==='High').map(r => ({name:fieldOf(r,'Name','?'), company:fieldOf(r,'Company','?'), reason:fieldOf(r,'UrgencyReason','')})),
+    byAssignee: (()=>{ const c={}; allRecords.forEach(r=>{const a=fieldOf(r,'AssignedTo',null); if(a) c[a]=(c[a]||0)+1;}); return c; })(),
+    repeatCount: allRecords.filter(r => fieldOf(r,'IsRepeatContact','No')==='Yes').length
+  };
+  try{
+    const res = await fetch('https://api.openai.com/v1/responses', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': `Bearer ${CONFIG.OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model:'gpt-5.4-mini',
+        input:
+          `You are writing a 2-3 sentence daily briefing for a small consulting firm's lead pipeline dashboard. Be specific, plain-English, and direct — mention real names/companies if there's anything urgent. Don't use markdown. Data: ${JSON.stringify(snapshot)}`,
+        max_output_tokens: 250
+      })
+    });
+    if(!res.ok) throw new Error(`OpenAI error ${res.status}: ${(await res.text()).slice(0,150)}`);
+    const data = await res.json();
+    const text = data.output[0].content[0].text.trim();
+    textEl.textContent = text;
+    metaEl.textContent = `Generated ${new Date().toLocaleTimeString('en-IN')} · based on ${snapshot.total} leads`;
+  } catch(err){
+    textEl.innerHTML = `<span class="placeholder">Briefing unavailable right now (${err.message}). Showing raw numbers instead: ${snapshot.total} total, ${snapshot.open} awaiting contact, ${snapshot.urgentLeads.length} flagged urgent.</span>`;
+  }
+}
+
+let lastSync = Date.now();
+setInterval(() => {
+  const secs = Math.floor((Date.now()-lastSync)/1000);
+  document.getElementById('syncLabel').textContent = secs < 5 ? 'synced just now' : `synced ${secs}s ago`;
+}, 1000);
+
+// ===== DASHBOARD Q&A CHATBOT =====
+let qaHistory = []; // {role: 'user'|'assistant', text: '...'}
+let qaOpen = false;
+
+function toggleQA(){
+  qaOpen = !qaOpen;
+  document.getElementById('qaPanel').classList.toggle('open', qaOpen);
+  if(qaOpen) document.getElementById('qaInput').focus();
+}
+
+function askSuggestion(el){
+  document.getElementById('qaInput').value = el.textContent;
+  sendQA();
+}
+
+function escapeHTML(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderQALog(){
+  const log = document.getElementById('qaLog');
+  log.innerHTML = qaHistory.map(m => `
+    <div class="qa-msg ${m.role}">
+      <div class="qa-bubble ${m.thinking ? 'thinking' : ''}">${escapeHTML(m.text).replace(/\n/g, '<br>')}</div>
+    </div>`).join('');
+  log.scrollTop = log.scrollHeight;
+}
+
+function buildLeadSnapshot(){
+  // Send a compact version of every lead so the model can answer almost any question
+  // about the real dataset, grounded in actual records rather than guessing.
+  return allRecords.map(r => ({
+    name: fieldOf(r,'Name',null),
+    company: fieldOf(r,'Company',null),
+    email: fieldOf(r,'Email',null),
+    inquiryType: fieldOf(r,'InquiryType',null),
+    status: fieldOf(r,'Status',null),
+    assignedTo: fieldOf(r,'AssignedTo',null),
+    urgency: fieldOf(r,'UrgencyLevel',null),
+    urgencyReason: fieldOf(r,'UrgencyReason',null),
+    isAfterHours: fieldOf(r,'IsAfterHours',null),
+    isRepeatContact: fieldOf(r,'IsRepeatContact',null),
+    submittedAt: fieldOf(r,'Submitted At',null)
+  }));
+}
+
+async function sendQA(){
+  const input = document.getElementById('qaInput');
+  const question = input.value.trim();
+  if(!question) return;
+  if(!openaiConfigured()){
+    qaHistory.push({role:'user', text: question});
+    qaHistory.push({role:'assistant', text: 'Add an OPENAI_API_KEY in the CONFIG block to enable this — I need it to read and reason over your live lead data.'});
+    renderQALog();
+    input.value = '';
+    return;
+  }
+
+  input.value = '';
+  document.getElementById('qaSend').disabled = true;
+  qaHistory.push({role:'user', text: question});
+  qaHistory.push({role:'assistant', text:'Thinking…', thinking:true});
+  renderQALog();
+
+  const snapshot = buildLeadSnapshot();
+  // Keep a short rolling history so follow-up questions ("what about just this week?") work,
+  // without re-sending it as model-native "messages" — we fold it into one input string instead,
+  // since the Responses API call here is stateless per-request.
+  const priorTurns = qaHistory.slice(0, -2).filter(m=>!m.thinking)
+    .map(m => `${m.role === 'user' ? 'Q' : 'A'}: ${m.text}`).join('\n');
+
+  const prompt = `You are answering questions about a small consulting firm's real, live lead pipeline data. Answer ONLY using the data provided below — if the data can't answer the question, say so plainly rather than guessing. Be concise and direct, plain English.
+
+FORMATTING RULES (follow these exactly, every time):
+- Never use markdown tables (no | pipe characters or --- separator rows) — they don't render here and will look broken.
+- Never use markdown headers, bold (**), or italics (*).
+- If the answer involves listing 2 or more leads, format each one on its own line like this exact pattern:
+  Name (Company) — InquiryType, Status, Urgency: X, Assigned: Y
+- If the answer is a single fact or short explanation, just write 1-3 plain sentences, no list needed.
+- Keep responses focused — don't restate the question back, don't add unnecessary preamble like "Sure, here's the data."
+
+${priorTurns ? 'Earlier in this conversation:\n' + priorTurns + '\n\n' : ''}Current question: ${question}
+
+Full lead data (JSON array, one object per lead):
+${JSON.stringify(snapshot)}`;
+
+  try{
+    const res = await fetch('https://api.openai.com/v1/responses', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': `Bearer ${CONFIG.OPENAI_API_KEY}` },
+      body: JSON.stringify({ model:'gpt-5.4-mini', input: prompt, max_output_tokens: 350 })
+    });
+    if(!res.ok) throw new Error(`OpenAI error ${res.status}: ${(await res.text()).slice(0,150)}`);
+    const data = await res.json();
+    const answer = data.output[0].content[0].text.trim();
+    qaHistory.pop(); // remove "Thinking…"
+    qaHistory.push({role:'assistant', text: answer});
+  } catch(err){
+    qaHistory.pop();
+    qaHistory.push({role:'assistant', text: `Couldn't get an answer (${err.message}). Try again in a moment.`});
+  }
+  renderQALog();
+  document.getElementById('qaSend').disabled = false;
+}
+
+loadData();
+</script>
+</body>
+</html>

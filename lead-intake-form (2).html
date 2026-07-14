@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get in touch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:        #10172A;
+    --sand:       #F0E9DC;
+    --bg:         #FAF8F4;
+    --gold:       #D89B3E;
+    --gold-dim:   #B98330;
+    --slate:      #5B6478;
+    --line:       rgba(16,23,42,0.10);
+    --error:      #B23A3A;
+    --display:    'Fraunces', serif;
+    --body:       'Inter', sans-serif;
+    --mono:       'JetBrains Mono', monospace;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ -webkit-font-smoothing:antialiased; }
+  body{
+    font-family:var(--body);
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  a{ color:inherit; }
+  .shell{
+    display:grid;
+    grid-template-columns: 34% 66%;
+    min-height:100vh;
+  }
+  /* ---------- LEFT PANEL ---------- */
+  .panel{
+    background:var(--ink);
+    color:var(--sand);
+    padding: 56px 44px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    position:relative;
+    overflow:hidden;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    inset:-20% -20% auto auto;
+    width:60%;
+    height:60%;
+    background: radial-gradient(circle at 70% 30%, rgba(216,155,62,0.18), transparent 70%);
+    pointer-events:none;
+  }
+  .brand-mark{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .brand-mark .dot{
+    width:6px; height:6px; border-radius:50%;
+    background:var(--gold);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:0.4; transform:scale(0.8); }
+  }
+  .panel-main{ margin-top:64px; }
+  .panel-eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:rgba(240,233,220,0.55);
+    margin-bottom:18px;
+  }
+  .panel-headline{
+    font-family:var(--display);
+    font-weight:480;
+    font-size:clamp(28px, 4vw, 40px);
+    line-height:1.12;
+    letter-spacing:-0.01em;
+    color:var(--sand);
+  }
+  .panel-headline em{
+    font-style:italic;
+    color:var(--gold);
+    font-weight:400;
+  }
+  .panel-sub{
+    margin-top:22px;
+    font-size:14.5px;
+    line-height:1.6;
+    color:rgba(240,233,220,0.65);
+    max-width:320px;
+  }
+  .clock-block{
+    margin-top:48px;
+    border-top:1px solid rgba(240,233,220,0.15);
+    padding-top:24px;
+  }
+  .clock-label{
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:rgba(240,233,220,0.5);
+    margin-bottom:8px;
+  }
+  .clock-value{
+    font-family:var(--mono);
+    font-size:34px;
+    font-weight:500;
+    color:var(--sand);
+    line-height:1;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .clock-value .unit{ font-size:15px; color:rgba(240,233,220,0.45); font-weight:400; }
+  .clock-note{
+    margin-top:10px;
+    font-size:12.5px;
+    color:rgba(240,233,220,0.5);
+    line-height:1.5;
+    max-width:280px;
+  }
+  .clock-note strong{ color:var(--gold); font-weight:500; }
+  .panel-foot{
+    font-size:12px;
+    color:rgba(240,233,220,0.4);
+    line-height:1.6;
+  }
+  /* ---------- RIGHT: STAGE (form OR chat) ---------- */
+  .stage{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 40px 8vw;
+    position:relative;
+  }
+  .progress-rail{
+    position:absolute;
+    top:0; left:0;
+    height:3px;
+    background:var(--gold);
+    width:0%;
+    transition:width 0.45s cubic-bezier(.65,0,.35,1);
+  }
+  .stepwrap{
+    width:100%;
+    max-width:480px;
+  }
+
+  /* ---------- CHOICE SCREEN (form vs chat) ---------- */
+  .mode-choice{ width:100%; max-width:480px; }
+  .mode-eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--slate); margin-bottom:14px;
+  }
+  .mode-title{
+    font-family:var(--display); font-weight:450; font-size:clamp(24px,3vw,30px);
+    line-height:1.25; letter-spacing:-0.01em; margin-bottom:30px;
+  }
+  .mode-cards{ display:flex; flex-direction:column; gap:14px; }
+  .mode-card{
+    border:1.5px solid var(--line); border-radius:12px; padding:22px 24px; cursor:pointer;
+    transition:border-color 0.2s, background 0.2s, transform 0.15s; background:#fff;
+    display:flex; align-items:center; gap:16px;
+  }
+  .mode-card:hover{ border-color:var(--gold); background:rgba(216,155,62,0.05); transform:translateY(-1px); }
+  .mode-icon{
+    width:42px; height:42px; border-radius:10px; background:var(--bg); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:var(--gold-dim);
+  }
+  .mode-icon svg{ width:21px; height:21px; }
+  .mode-card-title{ font-weight:600; font-size:15.5px; margin-bottom:3px; }
+  .mode-card-sub{ font-size:13px; color:var(--slate); line-height:1.4; }
+
+  .step-index{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--slate);
+    letter-spacing:0.05em;
+    margin-bottom:18px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .step-index .bar{
+    width:28px; height:1px; background:var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .step{
+    display:none;
+    animation: rise 0.5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .step.active{ display:block; }
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .q{
+    font-family:var(--display);
+    font-weight:450;
+    font-size:clamp(24px, 3vw, 30px);
+    line-height:1.25;
+    letter-spacing:-0.01em;
+    margin-bottom:8px;
+  }
+  .q .req{ color:var(--gold-dim); font-size:0.6em; vertical-align:super; }
+  .qhint{
+    font-size:13.5px;
+    color:var(--slate);
+    margin-bottom:28px;
+    line-height:1.5;
+  }
+  input[type=text], input[type=email], textarea{
+    width:100%;
+    border:none;
+    border-bottom:2px solid var(--line);
+    background:transparent;
+    font-family:var(--body);
+    font-size:21px;
+    color:var(--ink);
+    padding:10px 2px;
+    outline:none;
+    transition:border-color 0.25s;
+  }
+  input::placeholder, textarea::placeholder{ color:#C9C2B4; }
+  input:focus, textarea:focus{ border-color:var(--gold); }
+  textarea{ resize:none; min-height:108px; line-height:1.5; font-size:17px; }
+  .choices{ display:flex; flex-direction:column; gap:10px; margin-top:4px; }
+  .choice{
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:15px 18px;
+    font-size:15.5px;
+    cursor:pointer;
+    transition:border-color 0.2s, background 0.2s;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#fff;
+  }
+  .choice:hover{ border-color:#C9C2B4; }
+  .choice.selected{
+    border-color:var(--gold);
+    background:rgba(216,155,62,0.07);
+  }
+  .choice .key{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--slate);
+    border:1px solid var(--line);
+    border-radius:4px;
+    width:20px; height:20px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .choice.selected .key{ border-color:var(--gold); color:var(--gold-dim); }
+  .err{
+    color:var(--error);
+    font-size:13px;
+    margin-top:10px;
+    display:none;
+    font-family:var(--body);
+  }
+  .err.show{ display:block; }
+  .controls{
+    margin-top:36px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  button{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:14.5px;
+    border:none;
+    cursor:pointer;
+    border-radius:8px;
+    transition:transform 0.15s, background 0.2s, opacity 0.2s;
+  }
+  .btn-next{
+    background:var(--ink);
+    color:var(--sand);
+    padding:13px 26px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .btn-next:hover{ background:#1d2848; }
+  .btn-next:active{ transform:scale(0.97); }
+  .btn-next:disabled{ opacity:0.35; cursor:not-allowed; }
+  .btn-back{
+    background:none;
+    color:var(--slate);
+    font-weight:500;
+    padding:8px;
+  }
+  .btn-back:hover{ color:var(--ink); }
+  .enter-hint{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--slate);
+    opacity:0.6;
+  }
+  /* SUBMITTING / DONE */
+  .submitting, .done{
+    display:none;
+    text-align:center;
+  }
+  .submitting.active, .done.active{ display:block; }
+  .spinner{
+    width:34px; height:34px;
+    margin:0 auto 22px;
+    border:3px solid var(--line);
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .done-mark{
+    width:54px; height:54px;
+    border-radius:50%;
+    background:var(--ink);
+    margin:0 auto 26px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .done-mark svg{ width:24px; height:24px; }
+  .done-title{
+    font-family:var(--display);
+    font-size:28px;
+    font-weight:480;
+    margin-bottom:10px;
+  }
+  .done-sub{
+    color:var(--slate);
+    font-size:14.5px;
+    line-height:1.6;
+    max-width:360px;
+    margin:0 auto 28px;
+  }
+  .done-time{
+    display:inline-flex;
+    align-items:baseline;
+    gap:6px;
+    font-family:var(--mono);
+    background:var(--sand);
+    padding:10px 18px;
+    border-radius:8px;
+    font-size:13px;
+    color:var(--ink);
+  }
+  .done-time b{ font-size:20px; }
+  .done-id{
+    margin-top:22px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#C9C2B4;
+  }
+
+  /* ---------- CHAT MODE ---------- */
+  .chat-wrap{ width:100%; max-width:480px; display:flex; flex-direction:column; height:min(640px, 78vh); }
+  .chat-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .chat-head-left{ display:flex; align-items:center; gap:10px; }
+  .chat-avatar{
+    width:34px; height:34px; border-radius:50%; background:var(--ink); display:flex;
+    align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .chat-avatar svg{ width:17px; height:17px; color:var(--gold); }
+  .chat-head-title{ font-weight:600; font-size:14.5px; }
+  .chat-head-sub{ font-size:11.5px; color:var(--slate); display:flex; align-items:center; gap:6px; }
+  .chat-status-dot{ width:6px; height:6px; border-radius:50%; background:#6B9E6B; }
+  .chat-switch{
+    background:none; border:1px solid var(--line); color:var(--slate); font-size:12px;
+    font-weight:600; padding:7px 12px; border-radius:7px; cursor:pointer; transition:border-color .2s;
+  }
+  .chat-switch:hover{ border-color:var(--gold-dim); color:var(--ink); }
+
+  .chat-progress{ display:flex; gap:5px; margin-bottom:16px; }
+  .chat-progress-seg{ flex:1; height:3px; border-radius:2px; background:var(--line); transition:background .3s; }
+  .chat-progress-seg.filled{ background:var(--gold); }
+
+  .chat-log{
+    flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px;
+    padding:4px 4px 12px; margin-bottom:14px;
+  }
+  .chat-msg{ display:flex; gap:10px; max-width:100%; }
+  .chat-msg.user{ flex-direction:row-reverse; }
+  .chat-bubble{
+    padding:11px 15px; border-radius:14px; font-size:14.5px; line-height:1.55; max-width:82%;
+  }
+  .chat-msg.assistant .chat-bubble{ background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .chat-msg.user .chat-bubble{ background:var(--ink); color:var(--sand); }
+  .chat-bubble.thinking{ color:var(--slate); font-style:italic; }
+  .chat-bubble.thinking .dot-anim span{
+    display:inline-block; width:5px; height:5px; border-radius:50%; background:var(--slate);
+    margin-right:3px; animation: dotPulse 1.2s infinite ease-in-out;
+  }
+  .chat-bubble.thinking .dot-anim span:nth-child(2){ animation-delay:0.15s; }
+  .chat-bubble.thinking .dot-anim span:nth-child(3){ animation-delay:0.3s; }
+  @keyframes dotPulse{ 0%,80%,100%{opacity:.25;} 40%{opacity:1;} }
+
+  .chat-input-row{ display:flex; gap:10px; align-items:flex-end; }
+  .chat-input{
+    flex:1; border:1.5px solid var(--line); border-radius:12px; padding:12px 16px;
+    font-family:var(--body); font-size:14.5px; outline:none; resize:none; max-height:100px;
+    transition:border-color .2s; line-height:1.4;
+  }
+  .chat-input:focus{ border-color:var(--gold); }
+  .chat-send{
+    background:var(--ink); color:var(--sand); border-radius:12px; padding:12px 16px;
+    flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  }
+  .chat-send:disabled{ opacity:.35; cursor:not-allowed; }
+  .chat-send svg{ width:17px; height:17px; }
+  .chat-foot-note{
+    font-family:var(--mono); font-size:10.5px; color:var(--slate); opacity:.65; text-align:center; margin-top:10px;
+  }
+
+  @media (max-width: 860px){
+    .shell{ grid-template-columns:1fr; }
+    .panel{ padding:34px 28px; min-height:auto; }
+    .panel-main{ margin-top:30px; }
+    .clock-block{ margin-top:30px; }
+    .stage{ padding:48px 7vw 70px; }
+    .chat-wrap{ height:min(560px, 70vh); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<div class="progress-rail" id="progressRail"></div>
+
+<div class="shell">
+
+  <!-- LEFT EDITORIAL PANEL -->
+  <aside class="panel">
+    <div class="brand-mark"><span class="dot"></span>YOUR BUSINESS NAME</div>
+
+    <div class="panel-main">
+      <div class="panel-eyebrow">Lead intake</div>
+      <h1 class="panel-headline">Tell us what you<br>need. <em>We reply<br>in seconds</em>, not<br>hours.</h1>
+      <p class="panel-sub">Most businesses take 4–8 hours to respond to a new inquiry. By the time you hear back, you've already called someone else. Not here.</p>
+    </div>
+
+    <div>
+      <div class="clock-block">
+        <div class="clock-label">Time since you opened this form</div>
+        <div class="clock-value"><span id="clockDisplay">0.0</span><span class="unit">sec</span></div>
+        <p class="clock-note">This isn't decorative. <strong>The whole point of this system</strong> is that your inquiry gets a real, specific reply before this number gets anywhere near "hours."</p>
+      </div>
+      <p class="panel-foot" style="margin-top:32px;">Your details go straight into our system — no inbox, no spreadsheet, no waiting on someone to be at their desk.</p>
+    </div>
+  </aside>
+
+  <!-- RIGHT: STAGE -->
+  <main class="stage">
+
+    <!-- MODE CHOICE SCREEN -->
+    <div class="mode-choice" id="modeChoice">
+      <div class="mode-eyebrow">How would you like to get in touch?</div>
+      <div class="mode-title">Pick whichever feels easier.</div>
+      <div class="mode-cards">
+        <div class="mode-card" onclick="enterMode('chat')">
+          <div class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+          <div>
+            <div class="mode-card-title">Chat with us</div>
+            <div class="mode-card-sub">A quick back-and-forth — just tell us what's going on, no fields to fill in.</div>
+          </div>
+        </div>
+        <div class="mode-card" onclick="enterMode('form')">
+          <div class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6M9 8h6M5 4h14a1 1 0 0 1 1 1v15l-3-2-3 2-3-2-3 2-3-2-3 2V5a1 1 0 0 1 1-1z"/></svg></div>
+          <div>
+            <div class="mode-card-title">Fill out the form</div>
+            <div class="mode-card-sub">Five quick questions, one at a time — about 60 seconds.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM MODE -->
+    <div class="stepwrap" id="stepwrap" style="display:none;">
+
+      <div class="step-index" id="stepIndex">
+        <span id="stepNum">01</span> <span style="opacity:.4">/ 05</span>
+        <span class="bar"></span>
+      </div>
+
+      <!-- STEP 1: NAME -->
+      <div class="step active" data-step="1">
+        <div class="q">What's your name?<span class="req">*</span></div>
+        <p class="qhint">So we know who we're talking to.</p>
+        <input type="text" id="f_name" placeholder="Type your full name…" autocomplete="name">
+        <div class="err" id="err1">Please enter your name to continue.</div>
+        <div class="controls">
+          <button class="btn-next" onclick="next(1)">Continue <span style="opacity:.6">→</span></button>
+          <span class="enter-hint">press Enter ↵</span>
+        </div>
+      </div>
+
+      <!-- STEP 2: COMPANY -->
+      <div class="step" data-step="2">
+        <div class="q">Where do you work?</div>
+        <p class="qhint">Company or business name — leave blank if you're inquiring personally.</p>
+        <input type="text" id="f_company" placeholder="e.g. Gulf Properties LLC" autocomplete="organization">
+        <div class="controls">
+          <button class="btn-back" onclick="back(2)">← Back</button>
+          <button class="btn-next" onclick="next(2)">Continue <span style="opacity:.6">→</span></button>
+          <span class="enter-hint">press Enter ↵</span>
+        </div>
+      </div>
+
+      <!-- STEP 3: EMAIL -->
+      <div class="step" data-step="3">
+        <div class="q">Best email to reach you?<span class="req">*</span></div>
+        <p class="qhint">Your reply lands here — usually within a minute.</p>
+        <input type="email" id="f_email" placeholder="you@example.com" autocomplete="email">
+        <div class="err" id="err3">That doesn't look like a valid email — mind double-checking?</div>
+        <div class="controls">
+          <button class="btn-back" onclick="back(3)">← Back</button>
+          <button class="btn-next" onclick="next(3)">Continue <span style="opacity:.6">→</span></button>
+          <span class="enter-hint">press Enter ↵</span>
+        </div>
+      </div>
+
+      <!-- STEP 4: INQUIRY TYPE -->
+      <div class="step" data-step="4">
+        <div class="q">What's this about?<span class="req">*</span></div>
+        <p class="qhint">Pick the closest match — this routes you to the right person faster.</p>
+        <div class="choices" id="choiceGroup">
+          <div class="choice" data-value="Pricing"><span>Pricing &amp; packages</span><span class="key">1</span></div>
+          <div class="choice" data-value="Partnership"><span>Partnership</span><span class="key">2</span></div>
+          <div class="choice" data-value="Technical Support"><span>Technical support</span><span class="key">3</span></div>
+          <div class="choice" data-value="High-Value Prospect"><span>Enterprise / large team</span><span class="key">4</span></div>
+          <div class="choice" data-value="General Inquiry"><span>Something else</span><span class="key">5</span></div>
+        </div>
+        <div class="err" id="err4">Pick one option to continue.</div>
+        <div class="controls">
+          <button class="btn-back" onclick="back(4)">← Back</button>
+          <button class="btn-next" id="nextBtn4" onclick="next(4)" disabled>Continue <span style="opacity:.6">→</span></button>
+        </div>
+      </div>
+
+      <!-- STEP 5: MESSAGE -->
+      <div class="step" data-step="5">
+        <div class="q">Tell us a bit more.<span class="req">*</span></div>
+        <p class="qhint">The more specific you are, the more useful our reply will be — this isn't read by a generic auto-responder.</p>
+        <textarea id="f_message" placeholder="What are you trying to solve, and what made you reach out today?"></textarea>
+        <div class="err" id="err5">A few words helps us a lot — go ahead and add a line.</div>
+        <div class="controls">
+          <button class="btn-back" onclick="back(5)">← Back</button>
+          <button class="btn-next" onclick="submitForm()">Send it <span style="opacity:.6">✓</span></button>
+        </div>
+      </div>
+
+      <!-- SUBMITTING -->
+      <div class="submitting" id="submitting">
+        <div class="spinner"></div>
+        <p style="color:var(--slate); font-size:14px;">Sending your details…</p>
+      </div>
+
+      <!-- DONE -->
+      <div class="done" id="done">
+        <div class="done-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F0E9DC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="done-title">Got it — thank you.</div>
+        <p class="done-sub">Your inquiry is in. A personal reply is on its way to your inbox — keep an eye out.</p>
+        <div class="done-time">Received in <b id="finalTime">—</b>seconds</div>
+        <div class="done-id" id="leadIdDisplay"></div>
+      </div>
+
+    </div>
+
+    <!-- CHAT MODE -->
+    <div class="chat-wrap" id="chatWrap" style="display:none;">
+      <div class="chat-head">
+        <div class="chat-head-left">
+          <div class="chat-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+          <div>
+            <div class="chat-head-title">Quick chat</div>
+            <div class="chat-head-sub"><span class="chat-status-dot"></span>Usually replies in seconds</div>
+          </div>
+        </div>
+        <button class="chat-switch" onclick="backToChoice()">↺ Use the form instead</button>
+      </div>
+
+      <div class="chat-progress" id="chatProgress">
+        <div class="chat-progress-seg" data-field="name"></div>
+        <div class="chat-progress-seg" data-field="email"></div>
+        <div class="chat-progress-seg" data-field="message"></div>
+        <div class="chat-progress-seg" data-field="inquiryType"></div>
+      </div>
+
+      <div class="chat-log" id="chatLog"></div>
+
+      <!-- CHAT DONE STATE -->
+      <div class="done" id="chatDone" style="display:none; text-align:center; margin:auto;">
+        <div class="done-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F0E9DC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="done-title">Got it — thank you.</div>
+        <p class="done-sub">Your inquiry is in. A personal reply is on its way to your inbox — keep an eye out.</p>
+        <div class="done-time">Received in <b id="chatFinalTime">—</b>seconds</div>
+        <div class="done-id" id="chatLeadIdDisplay"></div>
+      </div>
+
+      <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" rows="1" placeholder="Type your reply…" onkeydown="handleChatKey(event)"></textarea>
+        <button class="chat-send" id="chatSend" onclick="sendChat()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+      <p class="chat-foot-note">Your reply still goes straight into our system, same as the form.</p>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  // ====== CONFIG ======
+  // Replace with your n8n Production webhook URL once the workflow is active.
+  const WEBHOOK_URL = "http://localhost:5678/webhook/39d72572-c674-4a1b-998b-ca4a38f74242";
+  // OpenAI key powers the chat mode only. Leave as-is to disable chat (form still works).
+  const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE";
+  const OPENAI_MODEL = "gpt-5.4-mini";
+
+  // ====== CLOCK (shared by both modes, resets when a mode is actually chosen) ======
+  let startTime = performance.now();
+  let clockRunning = true;
+  const clockEl = document.getElementById('clockDisplay');
+  function tickClock(){
+    if(!clockRunning) return;
+    const elapsed = (performance.now() - startTime) / 1000;
+    clockEl.textContent = elapsed.toFixed(1);
+    requestAnimationFrame(tickClock);
+  }
+  requestAnimationFrame(tickClock);
+
+  // ====== MODE SWITCHING ======
+  function enterMode(mode){
+    startTime = performance.now();   // start the clock fresh the moment a mode is actually picked
+    clockRunning = true;
+    document.getElementById('modeChoice').style.display = 'none';
+    if(mode === 'form'){
+      document.getElementById('stepwrap').style.display = 'block';
+      document.getElementById('chatWrap').style.display = 'none';
+    } else {
+      document.getElementById('chatWrap').style.display = 'flex';
+      document.getElementById('stepwrap').style.display = 'none';
+      if(chatHistory.length === 0) startChat();
+    }
+  }
+  function backToChoice(){
+    document.getElementById('chatWrap').style.display = 'none';
+    document.getElementById('stepwrap').style.display = 'none';
+    document.getElementById('modeChoice').style.display = 'block';
+  }
+
+  // ====== STEP NAV (form mode) ======
+  const TOTAL_STEPS = 5;
+  let current = 1;
+  const rail = document.getElementById('progressRail');
+  const stepNum = document.getElementById('stepNum');
+  function updateProgress(){
+    rail.style.width = ((current-1) / TOTAL_STEPS * 100) + "%";
+    stepNum.textContent = String(current).padStart(2,'0');
+  }
+  updateProgress();
+  function showStep(n){
+    document.querySelectorAll('.step').forEach(s=>{
+      s.classList.toggle('active', Number(s.dataset.step) === n);
+    });
+    current = n;
+    updateProgress();
+    const stepEl = document.querySelector(`.step[data-step="${n}"]`);
+    const focusable = stepEl.querySelector('input, textarea');
+    if(focusable) setTimeout(()=>focusable.focus(), 80);
+  }
+  function showError(stepN, show){
+    const el = document.getElementById('err'+stepN);
+    if(el) el.classList.toggle('show', show);
+  }
+  function next(fromStep){
+    if(fromStep === 1){
+      const v = document.getElementById('f_name').value.trim();
+      if(!v){ showError(1,true); return; }
+      showError(1,false);
+    }
+    if(fromStep === 3){
+      const v = document.getElementById('f_email').value.trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      if(!valid){ showError(3,true); return; }
+      showError(3,false);
+    }
+    if(fromStep === 4){
+      if(!selectedInquiry){ showError(4,true); return; }
+      showError(4,false);
+    }
+    showStep(fromStep + 1);
+  }
+  function back(fromStep){
+    showStep(fromStep - 1);
+  }
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){
+      const active = document.activeElement;
+      if(active && active.tagName === 'TEXTAREA' && active.id === 'f_message') return;
+      const stepEl = document.querySelector('#stepwrap .step.active');
+      if(!stepEl) return;
+      const stepN = Number(stepEl.dataset.step);
+      if(stepN < TOTAL_STEPS){
+        e.preventDefault();
+        next(stepN);
+      }
+    }
+  });
+
+  // ====== CHOICE SELECTION (form mode) ======
+  let selectedInquiry = null;
+  const choiceEls = document.querySelectorAll('.choice');
+  choiceEls.forEach(el=>{
+    el.addEventListener('click', ()=>{
+      choiceEls.forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedInquiry = el.dataset.value;
+      document.getElementById('nextBtn4').disabled = false;
+      showError(4,false);
+    });
+  });
+  document.addEventListener('keydown', (e)=>{
+    const stepEl = document.querySelector('#stepwrap .step.active');
+    if(!stepEl || stepEl.dataset.step !== '4') return;
+    const idx = Number(e.key) - 1;
+    if(idx >= 0 && idx < choiceEls.length){
+      choiceEls[idx].click();
+    }
+  });
+
+  // ====== SUBMIT (shared by both modes — same payload shape, same webhook) ======
+  async function submitLead(payload){
+    let ok = false;
+    try{
+      const res = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      ok = res.ok;
+    }catch(err){
+      ok = false;
+    }
+    return ok;
+  }
+
+  async function submitForm(){
+    const message = document.getElementById('f_message').value.trim();
+    if(!message){ showError(5,true); return; }
+    showError(5,false);
+
+    document.getElementById('stepwrap').querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    document.getElementById('submitting').classList.add('active');
+
+    const payload = {
+      name: document.getElementById('f_name').value.trim(),
+      company: document.getElementById('f_company').value.trim(),
+      email: document.getElementById('f_email').value.trim(),
+      inquiryType: selectedInquiry,
+      message: message,
+      submittedAt: new Date().toISOString(),
+      formStartedAt: new Date(Date.now() - (performance.now() - startTime)).toISOString(),
+      source: "custom-intake-form"
+    };
+
+    const ok = await submitLead(payload);
+    showDone(ok, 'form');
+  }
+
+  function showDone(ok, fromMode){
+    clockRunning = false;
+    const elapsedSec = ((performance.now() - startTime) / 1000).toFixed(1);
+
+    document.getElementById('submitting').classList.remove('active');
+    document.getElementById('modeChoice').style.display = 'none';
+
+    if(fromMode === 'chat'){
+      // Build a done screen inside the chat panel itself, rather than borrowing
+      // the form's #stepwrap container (which would be the wrong DOM structure).
+      document.getElementById('stepwrap').style.display = 'none';
+      document.getElementById('chatWrap').style.display = 'flex';
+      document.getElementById('chatLog').style.display = 'none';
+      document.querySelector('.chat-input-row').style.display = 'none';
+      document.querySelector('.chat-foot-note').style.display = 'none';
+      document.getElementById('chatDone').style.display = 'block';
+      document.getElementById('chatFinalTime').textContent = elapsedSec;
+      document.getElementById('chatLeadIdDisplay').textContent = ok
+        ? "submitted · " + new Date().toLocaleString()
+        : "saved locally — webhook unreachable (check WEBHOOK_URL / n8n is running)";
+    } else {
+      document.getElementById('chatWrap').style.display = 'none';
+      document.getElementById('stepwrap').style.display = 'block';
+      document.getElementById('stepwrap').querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+      document.getElementById('done').classList.add('active');
+      document.getElementById('finalTime').textContent = elapsedSec;
+      document.getElementById('leadIdDisplay').textContent = ok
+        ? "submitted · " + new Date().toLocaleString()
+        : "saved locally — webhook unreachable (check WEBHOOK_URL / n8n is running)";
+    }
+    rail.style.width = "100%";
+  }
+
+  // ====================================================================
+  // ====== CHAT MODE ======
+  // ====================================================================
+  let chatHistory = []; // {role:'assistant'|'user', text:'...'}
+  let collected = { name:null, email:null, message:null, inquiryType:null, company:null };
+  let chatSubmitted = false;
+
+  const INQUIRY_TYPES = ["Pricing","Partnership","Technical Support","High-Value Prospect","General Inquiry"];
+
+  function openaiReady(){
+    return OPENAI_API_KEY && !OPENAI_API_KEY.includes("YOUR_");
+  }
+
+  function escapeHTML(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderChatLog(){
+    const log = document.getElementById('chatLog');
+    log.innerHTML = chatHistory.map(m => {
+      if(m.thinking){
+        return `<div class="chat-msg assistant"><div class="chat-bubble thinking"><span class="dot-anim"><span></span><span></span><span></span></span></div></div>`;
+      }
+      return `<div class="chat-msg ${m.role}"><div class="chat-bubble">${escapeHTML(m.text).replace(/\n/g,'<br>')}</div></div>`;
+    }).join('');
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function updateChatProgress(){
+    document.querySelectorAll('.chat-progress-seg').forEach(seg => {
+      const field = seg.dataset.field;
+      seg.classList.toggle('filled', !!collected[field]);
+    });
+  }
+
+  function startChat(){
+    if(!openaiReady()){
+      chatHistory.push({role:'assistant', text:"This chat needs an OpenAI key to be configured by the site owner — please use the form instead for now."});
+      renderChatLog();
+      return;
+    }
+    chatHistory.push({role:'assistant', text:"Hi! I'm happy to help — what's your name, and what can I help you with today?"});
+    renderChatLog();
+  }
+
+  function handleChatKey(e){
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendChat();
+    }
+  }
+
+  async function sendChat(){
+    if(chatSubmitted) return;
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if(!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+
+    chatHistory.push({role:'user', text});
+    chatHistory.push({role:'assistant', text:'', thinking:true});
+    renderChatLog();
+    document.getElementById('chatSend').disabled = true;
+
+    const transcript = chatHistory.filter(m=>!m.thinking)
+      .map(m => `${m.role === 'user' ? 'Lead' : 'Assistant'}: ${m.text}`).join('\n');
+
+    const prompt = `You are a warm, efficient front-desk assistant for Solis & Pier Advisory, collecting a new lead's details through natural conversation, instead of a form.
+
+You need to gather exactly these things before finishing: their NAME, their EMAIL address, what they need help with (a real MESSAGE describing their situation — not just one word), and which CATEGORY best fits (choose ONLY one of: Pricing, Partnership, Technical Support, High-Value Prospect, General Inquiry). Company name is nice to have but optional.
+
+Conversation so far:
+${transcript}
+
+Respond with ONLY a single valid JSON object, no other text before or after it, in exactly this shape:
+{
+  "reply": "your next conversational message to the lead, asking for whatever is still missing, one thing at a time — friendly, brief, never list all missing fields at once",
+  "name": "extracted full name, or null if not yet given",
+  "email": "extracted email, or null if not yet given or invalid",
+  "company": "extracted company name, or null if not mentioned",
+  "message": "a clear 1-2 sentence summary of what they need help with, written in their own words/intent, or null if not yet clear",
+  "inquiryType": "one of Pricing/Partnership/Technical Support/High-Value Prospect/General Inquiry, or null if not yet clear enough to classify",
+  "readyToSubmit": true or false — true ONLY if name, email, message, AND inquiryType are all non-null and you have just told the lead you're all set
+}
+
+If the lead gives an email that looks invalid (no @ or no domain), set email to null and ask them to double check it in your reply. If they've given everything needed, set readyToSubmit true and your reply should be a warm closing line (e.g. confirming you've got everything and someone will follow up).`;
+
+    try{
+      const res = await fetch('https://api.openai.com/v1/responses', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization': `Bearer ${OPENAI_API_KEY}` },
+        body: JSON.stringify({ model: OPENAI_MODEL, input: prompt, max_output_tokens: 400 })
+      });
+      if(!res.ok) throw new Error(`API error ${res.status}`);
+      const data = await res.json();
+      const raw = data.output[0].content[0].text.trim();
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+
+      collected.name = parsed.name || collected.name;
+      collected.email = parsed.email || collected.email;
+      collected.company = parsed.company || collected.company;
+      collected.message = parsed.message || collected.message;
+      collected.inquiryType = parsed.inquiryType || collected.inquiryType;
+
+      chatHistory.pop(); // remove thinking bubble
+      chatHistory.push({role:'assistant', text: parsed.reply});
+      renderChatLog();
+      updateChatProgress();
+
+      if(parsed.readyToSubmit && collected.name && collected.email && collected.message && collected.inquiryType){
+        chatSubmitted = true;
+        const payload = {
+          name: collected.name,
+          company: collected.company || '',
+          email: collected.email,
+          inquiryType: collected.inquiryType,
+          message: collected.message,
+          submittedAt: new Date().toISOString(),
+          formStartedAt: new Date(Date.now() - (performance.now() - startTime)).toISOString(),
+          source: "chat-intake"
+        };
+        const ok = await submitLead(payload);
+        setTimeout(()=> showDone(ok, 'chat'), 900);
+      }
+    } catch(err){
+      chatHistory.pop();
+      chatHistory.push({role:'assistant', text:"Sorry, I hit a snag there — could you try saying that again?"});
+      renderChatLog();
+    }
+    document.getElementById('chatSend').disabled = false;
+  }
+
+  // auto-grow the chat textarea
+  document.getElementById('chatInput').addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+</script>
+
+</body>
+</html>

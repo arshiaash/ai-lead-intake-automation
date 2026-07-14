@@ -1,0 +1,1494 @@
+{
+  "name": "Lead Intake — Core Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "39d72572-c674-4a1b-998b-ca4a38f74242",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e3003fea-7d5a-4174-83c8-115060610f21",
+      "name": "Webhook",
+      "webhookId": "39d72572-c674-4a1b-998b-ca4a38f74242"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appjquZ9tjUP6siUU",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblDmie11UEPYJE8k",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU/tblDmie11UEPYJE8k"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Webhook').item.json.body.name }}",
+            "Status": "New",
+            "Company": "={{ $('Webhook').item.json.body.company }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Message": "={{ $('Webhook').item.json.body.message }}",
+            "InquiryType": "={{ $('Webhook').item.json.body.inquiryType }}",
+            "Submitted At": "={{ $('Webhook').item.json.body.submittedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New",
+                  "value": "New"
+                },
+                {
+                  "name": "Contacted",
+                  "value": "Contacted"
+                },
+                {
+                  "name": "In Progress",
+                  "value": "In Progress"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                },
+                {
+                  "name": "Lost",
+                  "value": "Lost"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "InquiryType",
+              "displayName": "InquiryType",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pricing",
+                  "value": "Pricing"
+                },
+                {
+                  "name": "Partnership",
+                  "value": "Partnership"
+                },
+                {
+                  "name": "Technical Support",
+                  "value": "Technical Support"
+                },
+                {
+                  "name": "High-Value Prospect",
+                  "value": "High-Value Prospect"
+                },
+                {
+                  "name": "General Inquiry",
+                  "value": "General Inquiry"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Submitted At",
+              "displayName": "Submitted At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "LeadID",
+              "displayName": "LeadID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        976,
+        48
+      ],
+      "id": "108aa383-df60-4314-8df8-54988ddac281",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gFyykOQ7lFRf0FeK",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Create a record').item.json.fields.Email }}",
+        "subject": "=Thanks for reaching out, {{ $('Create a record').item.json.fields.Name }}",
+        "emailType": "text",
+        "message": "={{ $('Message a model').item.json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2544,
+        48
+      ],
+      "id": "a4a62b83-fa8e-4b36-9fa6-b45d0bd35d41",
+      "name": "Send a message",
+      "webhookId": "b7b5e52f-9aa5-400a-ac21-2f4a310b2e58",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gaI03doI2eyAIT1f",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ycbxFmexKGo961kibPBoQWEVSl8e60ClFtTkwdUBZpQ",
+          "mode": "list",
+          "cachedResultName": "Lead Audit Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ycbxFmexKGo961kibPBoQWEVSl8e60ClFtTkwdUBZpQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ycbxFmexKGo961kibPBoQWEVSl8e60ClFtTkwdUBZpQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Webhook').item.json.body.name }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Company": "={{ $('Webhook').item.json.body.company }}",
+            "Inquiry Type": "={{ $('Webhook').item.json.body.inquiryType }}",
+            "Message": "={{ $('Webhook').item.json.body.message }}",
+            "SubmittedAt": "={{ $('Webhook').item.json.body.submittedAt}}",
+            "EmailSent": "TRUE"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Inquiry Type",
+              "displayName": "Inquiry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SubmittedAt",
+              "displayName": "SubmittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EmailSent",
+              "displayName": "EmailSent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2480,
+        192
+      ],
+      "id": "bb324b1a-062c-4f92-af8a-e03674f7e2a2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Sd8XGsogaosjGBXh",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Note: this inquiry was submitted {{ $('Update record').item.json.fields.IsAfterHours === 'Yes' ? 'outside business hours' : 'during business hours' }}. If outside business hours, briefly acknowledge this and reassure them you'll follow up first thing the next business day.\n\nThis inquiry's urgency was independently assessed as: {{ $('Code in JavaScript').item.json.urgency }}. If High, let your tone reflect appropriate responsiveness without being alarmist.\n\nYou are a warm, professional business development representative at Solis & Pier Advisory, a fictional consulting firm created for a portfolio project.\n\nA lead named {{ $('Create a record').item.json.fields.Name }} from {{ $('Create a record').item.json.fields.Company }} has submitted an inquiry categorized as \"{{ $('Create a record').item.json.fields.InquiryType }}\".\n\nTheir exact message was: \"{{ $('Create a record').item.json.fields.Message }}\"\n\nWrite a warm, professional 3-paragraph follow-up email that:\n1. Acknowledges their SPECIFIC inquiry — reference something concrete from what they actually wrote, not a generic greeting.\n2. Briefly explains how Solis & Pier Advisory can help with their specific need.\n3. Proposes a 20-minute discovery call as the next step.\n\nSign off as \"The Solis & Pier Advisory Team\". Do not include a subject line — just the email body. Keep it under 150 words. Write naturally, with no placeholder brackets."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        1968,
+        48
+      ],
+      "id": "7d3c436e-7451-498f-ab62-ac9ed5f6c0c9",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "aBCJoKK5kjpAGrzz",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1a172e7-3187-4818-8860-8a630646e55f",
+              "name": "AssignedTo",
+              "value": "={{\n  $('Create a record').item.json.fields.InquiryType === 'Pricing' ? 'Sarah Chen' :\n  $('Create a record').item.json.fields.InquiryType === 'Partnership' ? 'James Okafor' :\n  $('Create a record').item.json.fields.InquiryType === 'Technical Support' ? 'Priya Patel' :\n  $('Create a record').item.json.fields.InquiryType === 'High-Value Prospect' ? 'You (Founder)' :\n  'Sarah Chen'\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        48
+      ],
+      "id": "d96eb3ae-6ce8-400d-b931-0cabcaa273d3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appjquZ9tjUP6siUU",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblDmie11UEPYJE8k",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU/tblDmie11UEPYJE8k"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Create a record').item.json.id }}",
+            "AssignedTo": "={{ $json.AssignedTo }}",
+            "IsAfterHours": "={{ (() => { const d = new Date($('Webhook').item.json.body.submittedAt); const istHour = (d.getUTCHours() + 5.5) % 24; return (istHour < 9 || istHour >= 18) ? 'Yes' : 'No'; })() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New",
+                  "value": "New"
+                },
+                {
+                  "name": "Contacted",
+                  "value": "Contacted"
+                },
+                {
+                  "name": "In Progress",
+                  "value": "In Progress"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                },
+                {
+                  "name": "Lost",
+                  "value": "Lost"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "InquiryType",
+              "displayName": "InquiryType",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pricing",
+                  "value": "Pricing"
+                },
+                {
+                  "name": "Partnership",
+                  "value": "Partnership"
+                },
+                {
+                  "name": "Technical Support",
+                  "value": "Technical Support"
+                },
+                {
+                  "name": "High-Value Prospect",
+                  "value": "High-Value Prospect"
+                },
+                {
+                  "name": "General Inquiry",
+                  "value": "General Inquiry"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Submitted At",
+              "displayName": "Submitted At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "LeadID",
+              "displayName": "LeadID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "AssignedTo",
+              "displayName": "AssignedTo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IsAfterHours",
+              "displayName": "IsAfterHours",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Yes",
+                  "value": "Yes"
+                },
+                {
+                  "name": "No",
+                  "value": "No"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        48
+      ],
+      "id": "4990e00d-8139-48c5-a5f3-58835bfffd9b",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gFyykOQ7lFRf0FeK",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BBVBS48QZ",
+          "mode": "id"
+        },
+        "text": "={{ ($('Create a record').item.json.fields.InquiryType === 'High-Value Prospect' || $('Code in JavaScript').item.json.urgency === 'High') ? '🔴 High Priority' : '🔵 New Lead' }} — {{ $('Create a record').item.json.fields.Name }} from {{ $('Create a record').item.json.fields.Company }}\n\nInquiry: {{ $('Create a record').item.json.fields.InquiryType }}\nUrgency: {{ $('Code in JavaScript').item.json.urgency }} — {{ $('Code in JavaScript').item.json.reason }}\nAssigned to: {{ $('Edit Fields').item.json.AssignedTo }}\n{{ $('Update record').item.json.fields.IsAfterHours === 'Yes' ? '🌙 Submitted after hours — follow up next business day' : '' }}\n\nAI email sent ✓ | Lead added to Airtable ✓",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        2672,
+        192
+      ],
+      "id": "fcbee25f-68e2-4f0a-97e6-09c5fd5be6d8",
+      "name": "Send a message1",
+      "webhookId": "e54f65d7-d2d0-4d6f-b032-c2a5fbfb3962",
+      "credentials": {
+        "slackApi": {
+          "id": "3Kp0LfvFKoh8xKPV",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Analyze this customer inquiry message for genuine urgency, independent of any category they selected.\n\nMessage: \"{{ $('Create a record').item.json.fields.Message }}\"\n\nRespond with ONLY valid JSON in this exact format, no other text:\n{\"urgency\": \"Low\" or \"Medium\" or \"High\", \"reason\": \"one short sentence explaining why\"}\n\nConsider High urgency: explicit time pressure, mentions of losing money/customers, frustration, deadlines. Medium: genuine interest but no explicit pressure. Low: casual browsing, no urgency signals."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        1600,
+        48
+      ],
+      "id": "f45d5ece-6c10-4b7c-91fd-b43a26546d64",
+      "name": "Detect Urgency",
+      "credentials": {
+        "openAiApi": {
+          "id": "aBCJoKK5kjpAGrzz",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.item.json.output[0].content[0].text;\nconst cleaned = raw.replace(/```json|```/g, '').trim();\nconst parsed = JSON.parse(cleaned);\nreturn { urgency: parsed.urgency, reason: parsed.reason };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2096,
+        192
+      ],
+      "id": "7155cb0c-b5e8-4be0-8a38-671ba08d8d1d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appjquZ9tjUP6siUU",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblDmie11UEPYJE8k",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU/tblDmie11UEPYJE8k"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Create a record').item.json.id }}",
+            "UrgencyLevel ": "={{ $json.urgency }}",
+            "UrgencyReason": "={{ $json.reason }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New",
+                  "value": "New"
+                },
+                {
+                  "name": "Contacted",
+                  "value": "Contacted"
+                },
+                {
+                  "name": "In Progress",
+                  "value": "In Progress"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                },
+                {
+                  "name": "Lost",
+                  "value": "Lost"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "InquiryType",
+              "displayName": "InquiryType",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pricing",
+                  "value": "Pricing"
+                },
+                {
+                  "name": "Partnership",
+                  "value": "Partnership"
+                },
+                {
+                  "name": "Technical Support",
+                  "value": "Technical Support"
+                },
+                {
+                  "name": "High-Value Prospect",
+                  "value": "High-Value Prospect"
+                },
+                {
+                  "name": "General Inquiry",
+                  "value": "General Inquiry"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Submitted At",
+              "displayName": "Submitted At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "LeadID",
+              "displayName": "LeadID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "AssignedTo",
+              "displayName": "AssignedTo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "IsAfterHours",
+              "displayName": "IsAfterHours",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Yes",
+                  "value": "Yes"
+                },
+                {
+                  "name": "No",
+                  "value": "No"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "UrgencyLevel ",
+              "displayName": "UrgencyLevel ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Low",
+                  "value": "Low"
+                },
+                {
+                  "name": "Medium",
+                  "value": "Medium"
+                },
+                {
+                  "name": "High",
+                  "value": "High"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "UrgencyReason",
+              "displayName": "UrgencyReason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        2304,
+        192
+      ],
+      "id": "fa079ede-627c-4c3a-9711-d2231de34da0",
+      "name": "Update record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gFyykOQ7lFRf0FeK",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appjquZ9tjUP6siUU",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblDmie11UEPYJE8k",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU/tblDmie11UEPYJE8k"
+        },
+        "filterByFormula": "=AND({Email} = '{{ $json.body.email }}', {InquiryType} = '{{ $json.body.inquiryType }}')",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "32540dfc-1de5-4517-b607-ea20e4a75203",
+      "name": "Search records",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gFyykOQ7lFRf0FeK",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "79644a9c-b2be-4538-871f-6debd4139042",
+              "leftValue": "={{ $json.id ?? '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "19f33411-d7db-4a06-9965-cd113da8d775",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BBVBS48QZ",
+          "mode": "id"
+        },
+        "text": "=🔁 Repeat contact — {{ $json.fields.Name }} ({{ $json.fields.Email }}) has submitted an inquiry before. New message: \"{{ $json.fields.Message }}\". Check their history in Airtable before responding — this one skipped the AI email pipeline.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        1248,
+        -96
+      ],
+      "id": "d2f17668-bc74-451f-98c4-009e196a05df",
+      "name": "Send a message2",
+      "webhookId": "2e0cde5c-7b2a-4b9f-aaa1-0e7cbae96cef",
+      "credentials": {
+        "slackApi": {
+          "id": "3Kp0LfvFKoh8xKPV",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appjquZ9tjUP6siUU",
+          "mode": "list",
+          "cachedResultName": "Lead Management",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblDmie11UEPYJE8k",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appjquZ9tjUP6siUU/tblDmie11UEPYJE8k"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Follow-up Received",
+            "Name": "={{ $('Webhook').item.json.body.name }}",
+            "Company": "={{ $('Webhook').item.json.body.company }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "InquiryType": "={{ $('Webhook').item.json.body.inquiryType }}",
+            "Message": "={{ $('Webhook').item.json.body.message }}",
+            "Submitted At": "={{ $('Webhook').item.json.body.submittedAt }}",
+            "IsRepeatContact ": "Yes",
+            "LeadID": "={{ $('Search records').item.json.fields.LeadID }}"
+          },
+          "matchingColumns": [
+            "LeadID"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New",
+                  "value": "New"
+                },
+                {
+                  "name": "Contacted",
+                  "value": "Contacted"
+                },
+                {
+                  "name": "In Progress",
+                  "value": "In Progress"
+                },
+                {
+                  "name": "Converted",
+                  "value": "Converted"
+                },
+                {
+                  "name": "Lost",
+                  "value": "Lost"
+                },
+                {
+                  "name": "Follow-up Received",
+                  "value": "Follow-up Received"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "InquiryType",
+              "displayName": "InquiryType",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pricing",
+                  "value": "Pricing"
+                },
+                {
+                  "name": "Partnership",
+                  "value": "Partnership"
+                },
+                {
+                  "name": "Technical Support",
+                  "value": "Technical Support"
+                },
+                {
+                  "name": "High-Value Prospect",
+                  "value": "High-Value Prospect"
+                },
+                {
+                  "name": "General Inquiry",
+                  "value": "General Inquiry"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Submitted At",
+              "displayName": "Submitted At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "LeadID",
+              "displayName": "LeadID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "AssignedTo",
+              "displayName": "AssignedTo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IsAfterHours",
+              "displayName": "IsAfterHours",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Yes",
+                  "value": "Yes"
+                },
+                {
+                  "name": "No",
+                  "value": "No"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "UrgencyLevel ",
+              "displayName": "UrgencyLevel ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Low",
+                  "value": "Low"
+                },
+                {
+                  "name": "Medium",
+                  "value": "Medium"
+                },
+                {
+                  "name": "High",
+                  "value": "High"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "UrgencyReason",
+              "displayName": "UrgencyReason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IsRepeatContact ",
+              "displayName": "IsRepeatContact ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Yes",
+                  "value": "Yes"
+                },
+                {
+                  "name": "No",
+                  "value": "No"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        -128
+      ],
+      "id": "b2756695-8ee8-442b-a228-56046aba286c",
+      "name": "Update record2",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "gFyykOQ7lFRf0FeK",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Detect Urgency",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Urgency": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update record2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record2": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "CE2oNfeQLrFUukmo"
+  },
+  "versionId": "701d8690-a243-4725-9f44-f9a9ebf32f2b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "abd03bfb08121f48e4a499f17f6730a1af27f100be838397e94be247af3c5fb2"
+  },
+  "nodeGroups": [],
+  "id": "i7gFBmpR7SbwEcJw",
+  "tags": []
+}
